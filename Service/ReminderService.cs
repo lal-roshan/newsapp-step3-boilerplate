@@ -10,7 +10,7 @@ namespace Service
 
     // ReminderService class is used to implement all input validation operations for Reminder CRUD operations
 
-    public class ReminderService
+    public class ReminderService : IReminderService
     {
         /*
          * this service depends on ReminderRepository instance for the crud operations
@@ -36,6 +36,44 @@ namespace Service
          * delete an existing reminder
          * however, should throw ReminderNotFoundException if reminder with provided reminderId does not exist         * 
          */
+        readonly IReminderRepository repository;
 
+        public ReminderService(IReminderRepository repository)
+        {
+            this.repository = repository;
+        }
+
+        public async Task<Reminder> AddReminder(Reminder reminder)
+        {
+            var presentRem = await repository.GetReminder(reminder.ReminderId);
+            if(presentRem != null && presentRem.NewsId == reminder.NewsId)
+            {
+                throw new ReminderAlreadyExistsException(reminder.NewsId);
+            }
+            else
+            {
+                return await repository.AddReminder(reminder);
+            }
+        }
+
+        public async Task<Reminder> GetReminderByNewsId(int newsId)
+        {
+            var reminder = await repository.GetReminderByNewsId(newsId);
+            if(reminder != null)
+            {
+                return reminder;
+            }
+            throw new ReminderNotFoundException($"No reminder found for news: {newsId}");
+        }
+
+        public async Task<bool> RemoveReminder(int reminderId)
+        {
+            var reminder = await repository.GetReminder(reminderId);
+            if (reminder != null)
+            {
+                return await repository.RemoveReminder(reminder);
+            }
+            throw new ReminderNotFoundException($"No reminder found with id: {reminderId}");
+        }
     }
 }

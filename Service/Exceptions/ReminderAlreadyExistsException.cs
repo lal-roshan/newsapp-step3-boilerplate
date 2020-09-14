@@ -2,8 +2,11 @@ using System;
 
 namespace Service.Exceptions
 {
-    public class ReminderAlreadyExistsException
+    [Serializable]
+    public class ReminderAlreadyExistsException: Exception
     {
-        
+        public ReminderAlreadyExistsException(int newsId):
+            base($"This news: {newsId} already have a reminder")
+        { }
     }
 }

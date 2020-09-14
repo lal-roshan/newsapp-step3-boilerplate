@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Service.Exceptions
 {
-    public class ReminderNotFoundException
+    public class ReminderNotFoundException : Exception
     {
-        
+        public ReminderNotFoundException(string message) : base(message) { }
     }
 }

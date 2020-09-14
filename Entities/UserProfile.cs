@@ -4,6 +4,17 @@ namespace Entities
     //The class "UserProfile" will be acting as the data model for the User Table in the database.
     public class UserProfile
     {
+        public string UserId { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Contact { get; set; }
+
+        public string Email { get; set; }
+
+        public DateTime CreatedAt { get; set; }
         /*
         * This class should have six properties
         * (UserId,FirstName,LastName,Contact,Email,CreatedAt) 

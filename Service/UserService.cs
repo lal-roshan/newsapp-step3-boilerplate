@@ -10,7 +10,7 @@ namespace Service
 
     // UserService class is used to implement all input validation operations for User CRUD operations
 
-    public class UserService 
+    public class UserService : IUserService
     {
         /*
          * this service depends on UserRepository instance for the crud operations
@@ -46,6 +46,51 @@ namespace Service
          * update email and contact details for existing user,
          * however, should throw UserNotFoundException if User with provided userId does not exist
          */
-                
+        readonly IUserRepository repository;
+
+        public UserService(IUserRepository repository)
+        {
+            this.repository = repository;
+        }
+
+        public async Task<bool> AddUser(UserProfile user)
+        {
+            var presentUser = await repository.GetUser(user.UserId);
+            if(presentUser == null)
+            {
+                return await repository.AddUser(user);
+            }
+            throw new UserAlreadyExistsException($"{user.UserId} already exists");
+        }
+
+        public async Task<bool> DeleteUser(string userId)
+        {
+            var user = await repository.GetUser(userId);
+            if(user != null)
+            {
+                return await repository.DeleteUser(user);
+            }
+            throw new UserNotFoundException(userId);
+        }
+
+        public async Task<UserProfile> GetUser(string userId)
+        {
+            var user = await repository.GetUser(userId);
+            if (user != null)
+            {
+                return user;
+            }
+            throw new UserNotFoundException(userId);
+        }
+
+        public async Task<bool> UpdateUser(string userId, UserProfile user)
+        {
+            bool updated = await repository.UpdateUser(user);
+            if (updated)
+            {
+                return updated;
+            }
+            throw new UserNotFoundException(userId);
+        }
     }
 }

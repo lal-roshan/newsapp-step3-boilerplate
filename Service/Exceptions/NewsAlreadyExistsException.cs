@@ -2,8 +2,9 @@ using System;
 
 namespace Service.Exceptions
 {
-    public class NewsAlreadyExistsException
+    [Serializable]
+    public class NewsAlreadyExistsException : Exception
     {
-       
+        public NewsAlreadyExistsException() : base("This news is already added") { }
     }
 }

@@ -10,17 +10,22 @@ namespace NewsAPI.Controllers
     * the class with [ApiController] annotation and define the controller level route as per 
     * REST Api standard.
     */
+    [ApiController]
+    [Route("/api/{controller}")]
     public class NewsController : ControllerBase
     {
-       /*
-       * NoteService should  be injected through constructor injection. 
-       * Please note that we should not create service
-       * object using the new keyword
-       */
+        /*
+        * NoteService should  be injected through constructor injection. 
+        * Please note that we should not create service
+        * object using the new keyword
+        */
+        readonly INewsService newsService;
+
         public NewsController(INewsService newsService)
         {
-            
+            this.newsService = newsService;
         }
+
         /*
          * Example: //GET: api/News
         * Define a handler method which will get the news by a userId.

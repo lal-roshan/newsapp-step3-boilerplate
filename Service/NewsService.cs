@@ -11,13 +11,57 @@ namespace Service
 
     // NewsService class is used to implement all input validation operations for News CRUD operations
 
-    public class NewsService
+    public class NewsService : INewsService
     {
         /*
          * this service depends on NewsRepository instance for the crud operations
          */
+        readonly INewsRepository repository;
 
+        public NewsService(INewsRepository repository)
+        {
+            this.repository = repository;
+        }
 
+        public async Task<News> AddNews(News news)
+        {
+            var presentNews = repository.GetNewsById(news.NewsId);
+            if (presentNews == null)
+            {
+                return await repository.AddNews(news);
+            }
+            throw new NewsAlreadyExistsException();
+        }
+
+        public async Task<List<News>> GetAllNews(string userId)
+        {
+            var newsList = await repository.GetAllNews(userId);
+            if(newsList.Count > 0)
+            {
+                return newsList;
+            }
+            throw new NewsNotFoundException(userId);
+        }
+
+        public async Task<News> GetNewsById(int newsId)
+        {
+            var news = await repository.GetNewsById(newsId);
+            if(news != null)
+            {
+                return news;
+            }
+            throw new NewsNotFoundException(newsId);
+        }
+
+        public async Task<bool> RemoveNews(int newsId)
+        {
+            var news = await repository.GetNewsById(newsId);
+            if(news != null)
+            {
+                return await repository.RemoveNews(news);
+            }
+            throw new NewsNotFoundException(newsId);
+        }
 
         /*
          * Implement AddNews() method which should be used to 
@@ -45,6 +89,5 @@ namespace Service
          * delete an existing news
          * however, should throw NewsNotFoundException if news with provided newsId does not exist         * 
          */
-
     }
 }
