@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service;
 using Service.Exceptions;
@@ -6,37 +7,39 @@ using System;
 using System.Threading.Tasks;
 namespace NewsAPI.Controllers
 {
-    /*
-   * As in this assignment, we are working with creating RESTful web service, hence annotate
-   * the class with [ApiController] annotation and define the controller level route as per 
-   * REST Api standard.
-   */
+    /// <summary>
+    /// Api controller for handling Http requests regarding user entity
+    /// </summary>
     [Route("/api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        /*
-        * UserService should  be injected through constructor injection. 
-        * Please note that we should not create service object using the new keyword
-        */
+        /// <summary>
+        /// readonly property for the service class required
+        /// </summary>
         readonly IUserService userService;
 
+        /// <summary>
+        /// Paramterised constructor for injecting service class property
+        /// </summary>
+        /// <param name="userService"></param>
         public UserController(IUserService userService)
         {
             this.userService = userService;
         }
-        /*
-        * Example: //GET: api/user
-        * Define a handler method which will get the user details by a userId.
-        * This handler method should return any one of the status messages basis on
-        * different situations: 
-        * 1. 200(OK) - If the user details found successfully.
-        * 2. 404(NOT FOUND) - If the userprofile with specified userid doesn't exist. 
-        * This handler method should map to the URL "/api/user/{userId}" using HTTP GET method
-        * 3. 500 (Internal Server Error),means that server cannot process the request 
-          for an unknown reason.
-        */
+
+        /// <summary>
+        /// Method to get details based on the user id
+        /// </summary>
+        /// <param name="userId">The id of the user whose details is to be fetched</param>
+        /// <returns>The user profile object for the user with id mentioned</returns>
+        /// <response code="200">If the user details were fetched successfuly</response>
+        /// <response code="404">If the user details were not found</response>
+        /// <response code="500">If some error occurred</response>
         [HttpGet("{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(string userId)
         {
             try
@@ -53,26 +56,25 @@ namespace NewsAPI.Controllers
             }
         }
 
-        /*
-         * Define a handler method which will create a specific user profile by reading the
-         * Serialized object from request body and save the user details in a userprofile table
-         * in the database.
-         * 
-         * This handler method should
-         * return any one of the status messages basis on different situations: 
-         * 1. 201(CREATED) - If the user profile details created successfully. 
-         * 2. 409(CONFLICT) - If the userId conflicts
-         * This handler method should map to the URL "/api/user" using HTTP POST method
-         * 3. 500 (Internal Server Error),means that server cannot process the request 
-         *    for an unknown reason.
-         */
+
+        /// <summary>
+        /// Method for adding a user
+        /// </summary>
+        /// <param name="user">The user profile object that is to be added</param>
+        /// <returns>True if user was added successfully</returns>
+        /// <response code="201">If user was added successfuly</response>
+        /// <response code="409">If user already exists</response>
+        /// <response code="500">If some error occurred</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post(UserProfile user)
         {
             try
             {
-                await userService.AddUser(user);
-                return Created("api/user", true);
+                bool added = await userService.AddUser(user);
+                return Created("api/user", added);
             }
             catch (UserAlreadyExistsException exc)
             {
@@ -84,21 +86,15 @@ namespace NewsAPI.Controllers
             }
         }
 
-        /*
-         * Define a handler method which will update a specific user by reading the
-         * Serialized object from request body and save the updated user details in
-         * a userprofile table in database.
-         * This handler method should return any one of the status
-         * messages basis on different situations: 
-         * 1. 200(OK) - If the reminder updated
-         * successfully. 
-         * 2. 404(NOT FOUND) - If the userprofile with specified userid doesn't exist. 
-         * 
-         * This handler method should map to the URL "/api/reminder/{id}" using HTTP PUT
-         * method.
-         * 3. 500(Internal Server Error),means that server cannot process the request 
-         *    for an unknown reason.
-         */
+        /// <summary>
+        /// Method for updating user details
+        /// </summary>
+        /// <param name="id">The id of the user whose details are to be updated</param>
+        /// <param name="user">The modified user profile details</param>
+        /// <returns>True if user was updated</returns>
+        /// <response code="200">If user was updated successfuly</response>
+        /// <response code="404">If user was not found</response>
+        /// <response code="500">If some error occurred</response>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, UserProfile user)
         {
@@ -128,6 +124,15 @@ namespace NewsAPI.Controllers
         * 3. 500(Internal Server Error),means that server cannot process the request 
         *    for an unknown reason.
         */
+
+        /// <summary>
+        /// Method to delete a user
+        /// </summary>
+        /// <param name="id">The id of the user to be deleted</param>
+        /// <returns>True if user was deleted</returns>
+        /// <response code="200">If user was deleted successfuly</response>
+        /// <response code="404">If user was not found</response>
+        /// <respones code="500">If some error occurred</respones>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {

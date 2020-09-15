@@ -6,23 +6,30 @@ using System.Threading.Tasks;
 
 namespace Service
 {
-    //Inherit the respective interface and implement the methods in 
-    // this class i.e NewsService by inheriting INewsService
-
-    // NewsService class is used to implement all input validation operations for News CRUD operations
-
+    /// <summary>
+    /// This class is used to implement all input validation operations for News CRUD operations
+    /// </summary>
     public class NewsService : INewsService
     {
-        /*
-         * this service depends on NewsRepository instance for the crud operations
-         */
+        /// <summary>
+        /// readonly property for repository
+        /// </summary>
         readonly INewsRepository repository;
 
+        /// <summary>
+        /// Paramterised constructor for injecting repository property
+        /// </summary>
+        /// <param name="repository"></param>
         public NewsService(INewsRepository repository)
         {
             this.repository = repository;
         }
 
+        /// <summary>
+        /// Method to add news
+        /// </summary>
+        /// <param name="news">The news object that is to be added</param>
+        /// <returns>The added news</returns>
         public async Task<News> AddNews(News news)
         {
             bool newsExists = await repository.IsNewsExist(news);
@@ -33,6 +40,11 @@ namespace Service
             throw new NewsAlreadyExistsException("This news is already added");
         }
 
+        /// <summary>
+        /// Method for fetching all news created by a user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>List of all news that the user has created</returns>
         public async Task<List<News>> GetAllNews(string userId)
         {
             List<News> newsList = await repository.GetAllNews(userId);
@@ -43,6 +55,11 @@ namespace Service
             throw new NewsNotFoundException($"No news found for user: {userId}");
         }
 
+        /// <summary>
+        /// Method to fetch a particular news based on id
+        /// </summary>
+        /// <param name="newsId">The id of the news to be fetched</param>
+        /// <returns>The news corresponding to the id</returns>
         public async Task<News> GetNewsById(int newsId)
         {
             News news = await repository.GetNewsById(newsId);
@@ -53,6 +70,11 @@ namespace Service
             throw new NewsNotFoundException($"No news found with Id: {newsId}");
         }
 
+        /// <summary>
+        /// Method to remove a news
+        /// </summary>
+        /// <param name="newsId">The id of the news to be removed</param>
+        /// <returns>True if news was removed</returns>
         public async Task<bool> RemoveNews(int newsId)
         {
             News news = await repository.GetNewsById(newsId);
@@ -62,32 +84,5 @@ namespace Service
             }
             throw new NewsNotFoundException($"No news found with Id: {newsId}");
         }
-
-        /*
-         * Implement AddNews() method which should be used to 
-         * save a new News, provided the news does not exist, 
-         * else should throw NewsAlreadyExistsException
-         */
-
-
-        /*
-         * Implement GetAllNews() method which should be used to 
-         * get all news details for the provided userId,
-         * however, should throw NewsNotFoundException if no news exist for the provided userId
-         */
-
-
-        /*
-         * Implement GetNewsById() method which should be used to 
-         * get complete news details for the provided newsId,
-         * however, should throw NewsNotFoundException if no news exist for the provided newsId
-         */
-
-
-        /*
-         * Implement RemoveNews() method which should be used to 
-         * delete an existing news
-         * however, should throw NewsNotFoundException if news with provided newsId does not exist         * 
-         */
     }
 }

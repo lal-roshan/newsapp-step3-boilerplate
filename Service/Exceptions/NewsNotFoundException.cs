@@ -1,9 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Service.Exceptions
 {
+    /// <summary>
+    /// Exception to be thrown when news that user is trying to access is not found
+    /// </summary>
     [Serializable]
     public class NewsNotFoundException: Exception
     {

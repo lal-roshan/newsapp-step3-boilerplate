@@ -1,14 +1,12 @@
 ﻿using Entities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 namespace DAL
 {
-     /*
-	 * Should not modify this interface. You have to implement these methods of interface 
-     * in corresponding Implementation classes
-	 */
+    /*
+    * Should not modify this interface. You have to implement these methods of interface 
+    * in corresponding Implementation classes
+    */
     public interface INewsRepository
     {
         Task<News> AddNews(News news);

@@ -2,20 +2,39 @@
 using Microsoft.EntityFrameworkCore;
 namespace DAL
 {
-    //Inherit DbContext class and use Entity Framework Code First Approach
+    /// <summary>
+    /// Class that facilitates communication with database and its creation based on entitiy framework
+    /// </summary>
     public class NewsDbContext: DbContext
     {
+        /// <summary>
+        /// The property representing Users table
+        /// </summary>
         public DbSet<UserProfile> Users { get; set; }
 
+        /// <summary>
+        /// The property representing NewsList table
+        /// </summary>
         public DbSet<News> NewsList { get; set; }
 
+        /// <summary>
+        /// The property representing Reminders table
+        /// </summary>
         public DbSet<Reminder> Reminders { get; set; }
 
+        /// <summary>
+        /// Parametrised constructor
+        /// </summary>
+        /// <param name="options"></param>
         public NewsDbContext(DbContextOptions<NewsDbContext> options): base(options)
         {
             Database.EnsureCreated();
         }
 
+        /// <summary>
+        /// Method for applying constraints and setting properties of table columns
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserProfile>().HasKey(u => u.UserId);
@@ -42,15 +61,6 @@ namespace DAL
             modelBuilder.Entity<Reminder>().Property(r => r.Schedule).IsRequired();
             modelBuilder.Entity<Reminder>().Property(r => r.NewsId).IsRequired();
         }
-        /*
-        This class should be used as DbContext to speak to database and should make the use of 
-        Code First Approach. It should autogenerate the database based upon the model class in 
-        your application
-        */
-
-        //Create a Dbset for News,USerProfile and Reminders
-
-        /*Override OnModelCreating function to configure relationship between entities and initialize*/
     }
 }
 

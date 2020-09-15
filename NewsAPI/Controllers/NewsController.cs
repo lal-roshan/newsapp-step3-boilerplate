@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service;
 using Service.Exceptions;
@@ -6,38 +7,41 @@ using System;
 using System.Threading.Tasks;
 namespace NewsAPI.Controllers
 {
-    /*
-    * As in this assignment, we are working with creating RESTful web service, hence annotate
-    * the class with [ApiController] annotation and define the controller level route as per 
-    * REST Api standard.
-    */
+    /// <summary>
+    /// Api controller for handling Http requests regarding news entity
+    /// </summary>
     [Route("/api/[controller]")]
     [ApiController]
     public class NewsController : ControllerBase
     {
-        /*
-        * NoteService should  be injected through constructor injection. 
-        * Please note that we should not create service
-        * object using the new keyword
-        */
+        /// <summary>
+        /// readonly property for the service class required
+        /// </summary>
         readonly INewsService newsService;
 
+        /// <summary>
+        /// Paramterised constructor for injecting service class property
+        /// </summary>
+        /// <param name="newsService"></param>
         public NewsController(INewsService newsService)
         {
             this.newsService = newsService;
         }
 
-        /*
-         * Example: //GET: api/News
-        * Define a handler method which will get the news by a userId.
-        * 
-        * This handler method should return any one of the status messages basis on
-        * different situations: 
-        * 1. 200(OK) - If the news found successfully.
-        * 
-        * This handler method should map to the URL "/api/news/{userId}" using HTTP GET method
-        */
+        /// <summary>
+        /// Method for fetching all news created by a specific user
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// GET: api/News
+        /// </remarks>
+        /// <param name="userId">The id of the user whose news are to be fetched</param>
+        /// <returns>The list of news created by the mentioned user</returns>
+        /// <response code="200">If the news list was fetched successfuly</response>
+        /// <response code="404">If no news were found for the user</response>
         [HttpGet("{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(string userId)
         {
             try
@@ -50,18 +54,22 @@ namespace NewsAPI.Controllers
             }
         }
 
-        // Example: GET: api/News/3
-        /*
-        * Define a handler method which will get the news by a userId.
-        * 
-        * This handler method should return any one of the status messages basis on
-        * different situations: 
-        * 1. 200(OK) - If the news found successfully.
-        * 2. 404(NOT FOUND) - If the news with specified newsId is not found.
-        * 3. 500 (Internal Server Error),means that server cannot process the request 
-        *    for an unknown reason.
-        */
+        /// <summary>
+        /// Method to get a specific news by its id
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// GET: api/News/3
+        /// </remarks>
+        /// <param name="newsId">The id of the news to be fetched</param>
+        /// <returns>The news object corresponding to the mentioned id</returns>
+        /// <response code="200">If the news was fetched succesfuly</response>
+        /// <response code="404">If the news was not found</response>
+        /// <response code="500">If some issue occurred</response>
         [HttpGet("{newsId:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(int newsId)
         {
             try
@@ -78,20 +86,18 @@ namespace NewsAPI.Controllers
             }
         }
 
-        /*
-         * Define a handler method which will create a specific news by reading the
-         * Serialized object from request body and save the news details in a News table
-         * in the database.
-         * 
-         * This handler method should
-         * return any one of the status messages basis on different situations: 
-         * 1. 201(CREATED) - If the news created successfully. 
-         * 2. 409(CONFLICT) - If the newsId conflicts
-         * This handler method should map to the URL "/api/news" using HTTP POST method
-         * 3. 500 (Internal Server Error),means that server cannot process the request 
-         *      for an unknown reason.
-         */
+        /// <summary>
+        /// Method to add a news
+        /// </summary>
+        /// <param name="news">The news object that is to be added</param>
+        /// <returns>Returns the added news</returns>
+        /// <response code="201">If the news was added successfuly</response>
+        /// <response code="409">If the news already exists</response>
+        /// <response code="500">If some issue occured</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post(News news)
         {
             try
@@ -108,23 +114,19 @@ namespace NewsAPI.Controllers
                 return StatusCode(500, "Some error occurred, please try again later !!");
             }
         }
-        /*
-        * Define a handler method which will delete a news from a database.
-        * 
-        * This handler method should return any one of the status messages basis on
-        * different situations:
-        * 1. 200(OK) - If the news deleted successfully from
-        *    database. 
-        * 2. 404(NOT FOUND) - If the news with specified newsId is not found.
-        *    Note: Its always better to have your own custom Exception to display 
-        *    not found exception
-        * 
-        * This handler method should map to the URL "/api/news/{id}" using HTTP Delete
-        * method" where "id" should be replaced by a valid newsId without {}
-        * 3. 500 (Internal Server Error),means that server cannot process the request 
-        *    for an unknown reason.
-        */
+
+        /// <summary>
+        /// Method to delete a news
+        /// </summary>
+        /// <param name="id">The id of news to be deleted</param>
+        /// <returns>True if news was deleted</returns>
+        /// <response code="200">If news was deleted successfuly</response>
+        /// <response code="404">If news was not found</response>
+        /// <response code="500">If some error occurred</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int id)
         {
             try
