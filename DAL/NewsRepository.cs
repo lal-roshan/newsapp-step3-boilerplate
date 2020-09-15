@@ -18,6 +18,10 @@ namespace DAL
 
         public async Task<News> AddNews(News news)
         {
+            int newsId = 101;
+            if (dbContext.NewsList.Count() > 0)
+                newsId = dbContext.NewsList.Max(t => t.NewsId) + 1;
+            news.NewsId = newsId;
             await dbContext.NewsList.AddAsync(news);
             await dbContext.SaveChangesAsync();
             return news;
@@ -35,7 +39,10 @@ namespace DAL
 
         public async Task<bool> IsNewsExist(News news)
         {
-            return await dbContext.NewsList.ContainsAsync(news);
+            return await dbContext.NewsList.AnyAsync(n => 
+            string.Equals(n.Title, news.Title) &&
+            string.Equals(n.Content, news.Content) &&
+            string.Equals(n.CreatedBy, news.CreatedBy));
         }
 
         public async Task<bool> RemoveNews(News news)

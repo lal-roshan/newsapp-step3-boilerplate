@@ -55,7 +55,7 @@ namespace Service
 
         public async Task<bool> AddUser(UserProfile user)
         {
-            var presentUser = await repository.GetUser(user.UserId);
+            UserProfile presentUser = await repository.GetUser(user.UserId);
             if(presentUser == null)
             {
                 return await repository.AddUser(user);
@@ -65,22 +65,22 @@ namespace Service
 
         public async Task<bool> DeleteUser(string userId)
         {
-            var user = await repository.GetUser(userId);
+            UserProfile user = await repository.GetUser(userId);
             if(user != null)
             {
                 return await repository.DeleteUser(user);
             }
-            throw new UserNotFoundException(userId);
+            throw new UserNotFoundException($"{userId} doesn't exist");
         }
 
         public async Task<UserProfile> GetUser(string userId)
         {
-            var user = await repository.GetUser(userId);
+            UserProfile user = await repository.GetUser(userId);
             if (user != null)
             {
                 return user;
             }
-            throw new UserNotFoundException(userId);
+            throw new UserNotFoundException($"{userId} doesn't exist");
         }
 
         public async Task<bool> UpdateUser(string userId, UserProfile user)
@@ -90,7 +90,7 @@ namespace Service
             {
                 return updated;
             }
-            throw new UserNotFoundException(userId);
+            throw new UserNotFoundException($"{userId} doesn't exist");
         }
     }
 }

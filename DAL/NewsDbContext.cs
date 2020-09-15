@@ -18,6 +18,7 @@ namespace DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<UserProfile>().HasKey(u => u.UserId);
             modelBuilder.Entity<UserProfile>().Property(u => u.UserId).ValueGeneratedNever();
             modelBuilder.Entity<UserProfile>().Property(u => u.UserId).IsRequired();
             modelBuilder.Entity<UserProfile>().Property(u => u.FirstName).IsRequired();
@@ -25,6 +26,8 @@ namespace DAL
             modelBuilder.Entity<UserProfile>().Property(u => u.Contact).IsRequired();
             modelBuilder.Entity<UserProfile>().Property(u => u.CreatedAt).IsRequired();
 
+            modelBuilder.Entity<News>().HasKey(n => n.NewsId);
+            modelBuilder.Entity<News>().Property(n => n.NewsId).ValueGeneratedNever();
             modelBuilder.Entity<News>().Property(n => n.NewsId).IsRequired();
             modelBuilder.Entity<News>().Property(n => n.Title).IsRequired();
             modelBuilder.Entity<News>().Property(n => n.Content).IsRequired();
@@ -33,11 +36,11 @@ namespace DAL
             modelBuilder.Entity<News>().Property(n => n.Url).IsRequired();
             modelBuilder.Entity<News>().Property(n => n.UrlToImage).IsRequired();
 
+            modelBuilder.Entity<Reminder>().HasKey(r => r.ReminderId);
+            //modelBuilder.Entity<Reminder>().Property(r => r.ReminderId).ValueGeneratedNever();
             modelBuilder.Entity<Reminder>().Property(r => r.ReminderId).IsRequired();
             modelBuilder.Entity<Reminder>().Property(r => r.Schedule).IsRequired();
             modelBuilder.Entity<Reminder>().Property(r => r.NewsId).IsRequired();
-
-
         }
         /*
         This class should be used as DbContext to speak to database and should make the use of 

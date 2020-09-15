@@ -34,6 +34,8 @@ namespace NewsAPI
             services.AddScoped<IReminderRepository, ReminderRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<INewsService, NewsService>();
+            services.AddScoped<IReminderService, ReminderService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddControllers();
             //provide options for DbContext 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Service;
 using Service.Exceptions;
+using System;
 using System.Threading.Tasks;
 namespace NewsAPI.Controllers
 {
@@ -10,8 +11,8 @@ namespace NewsAPI.Controllers
     * the class with [ApiController] annotation and define the controller level route as per 
     * REST Api standard.
     */
+    [Route("/api/[controller]")]
     [ApiController]
-    [Route("/api/{controller}")]
     public class NewsController : ControllerBase
     {
         /*
@@ -36,6 +37,18 @@ namespace NewsAPI.Controllers
         * 
         * This handler method should map to the URL "/api/news/{userId}" using HTTP GET method
         */
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> Get(string userId)
+        {
+            try
+            {
+                return Ok(await newsService.GetAllNews(userId));
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 
         // Example: GET: api/News/3
         /*
@@ -48,6 +61,22 @@ namespace NewsAPI.Controllers
         * 3. 500 (Internal Server Error),means that server cannot process the request 
         *    for an unknown reason.
         */
+        [HttpGet("{newsId:int}")]
+        public async Task<IActionResult> Get(int newsId)
+        {
+            try
+            {
+                return Ok(await newsService.GetNewsById(newsId));
+            }
+            catch (NewsNotFoundException exc)
+            {
+                return NotFound(exc.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Some error occurred, please try again later !!");
+            }
+        }
 
         /*
          * Define a handler method which will create a specific news by reading the
@@ -62,7 +91,23 @@ namespace NewsAPI.Controllers
          * 3. 500 (Internal Server Error),means that server cannot process the request 
          *      for an unknown reason.
          */
-
+        [HttpPost]
+        public async Task<IActionResult> Post(News news)
+        {
+            try
+            {
+                news = await newsService.AddNews(news);
+                return Created("api/news",news);
+            }
+            catch(NewsAlreadyExistsException exc)
+            {
+                return Conflict(exc.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Some error occurred, please try again later !!");
+            }
+        }
         /*
         * Define a handler method which will delete a news from a database.
         * 
@@ -79,5 +124,21 @@ namespace NewsAPI.Controllers
         * 3. 500 (Internal Server Error),means that server cannot process the request 
         *    for an unknown reason.
         */
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                return Ok(await newsService.RemoveNews(id));
+            }
+            catch (NewsNotFoundException exc)
+            {
+                return NotFound(exc.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Some error occurred, please try again later !!");
+            }
+        }
     }
 }

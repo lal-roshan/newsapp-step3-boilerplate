@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Service;
 using Service.Exceptions;
+using System;
 using System.Threading.Tasks;
 namespace NewsAPI.Controllers
 {
@@ -10,15 +11,19 @@ namespace NewsAPI.Controllers
    * the class with [ApiController] annotation and define the controller level route as per 
    * REST Api standard.
    */
+    [Route("/api/[controller]")]
+    [ApiController]
     public class UserController : ControllerBase
     {
         /*
         * UserService should  be injected through constructor injection. 
         * Please note that we should not create service object using the new keyword
         */
+        readonly IUserService userService;
+
         public UserController(IUserService userService)
         {
-
+            this.userService = userService;
         }
         /*
         * Example: //GET: api/user
@@ -31,6 +36,22 @@ namespace NewsAPI.Controllers
         * 3. 500 (Internal Server Error),means that server cannot process the request 
           for an unknown reason.
         */
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> Get(string userId)
+        {
+            try
+            {
+                return Ok(await userService.GetUser(userId));
+            }
+            catch (UserNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Some error occurred, please try again later !!");
+            }
+        }
 
         /*
          * Define a handler method which will create a specific user profile by reading the
@@ -45,6 +66,23 @@ namespace NewsAPI.Controllers
          * 3. 500 (Internal Server Error),means that server cannot process the request 
          *    for an unknown reason.
          */
+        [HttpPost]
+        public async Task<IActionResult> Post(UserProfile user)
+        {
+            try
+            {
+                await userService.AddUser(user);
+                return Created("api/user", true);
+            }
+            catch (UserAlreadyExistsException exc)
+            {
+                return Conflict(exc.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Some error occurred, please try again later !!");
+            }
+        }
 
         /*
          * Define a handler method which will update a specific user by reading the
@@ -61,7 +99,22 @@ namespace NewsAPI.Controllers
          * 3. 500(Internal Server Error),means that server cannot process the request 
          *    for an unknown reason.
          */
-
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(string id, UserProfile user)
+        {
+            try
+            {
+                return Ok(await userService.UpdateUser(id, user));
+            }
+            catch (UserNotFoundException exc)
+            {
+                return NotFound(exc.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Some error occurred, please try again later !!");
+            }
+        }
         /*
         * Define a handler method which will delete a user from a database.
         * 
@@ -75,5 +128,21 @@ namespace NewsAPI.Controllers
         * 3. 500(Internal Server Error),means that server cannot process the request 
         *    for an unknown reason.
         */
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            try
+            {
+                return Ok(await userService.DeleteUser(id));
+            }
+            catch (UserNotFoundException exc)
+            {
+                return NotFound(exc.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Some error occurred, please try again later !!");
+            }
+        }
     }
 }

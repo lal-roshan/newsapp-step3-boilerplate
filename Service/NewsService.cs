@@ -25,42 +25,42 @@ namespace Service
 
         public async Task<News> AddNews(News news)
         {
-            var presentNews = repository.GetNewsById(news.NewsId);
-            if (presentNews == null)
+            bool newsExists = await repository.IsNewsExist(news);
+            if (!newsExists)
             {
                 return await repository.AddNews(news);
             }
-            throw new NewsAlreadyExistsException();
+            throw new NewsAlreadyExistsException("This news is already added");
         }
 
         public async Task<List<News>> GetAllNews(string userId)
         {
-            var newsList = await repository.GetAllNews(userId);
+            List<News> newsList = await repository.GetAllNews(userId);
             if(newsList.Count > 0)
             {
                 return newsList;
             }
-            throw new NewsNotFoundException(userId);
+            throw new NewsNotFoundException($"No news found for user: {userId}");
         }
 
         public async Task<News> GetNewsById(int newsId)
         {
-            var news = await repository.GetNewsById(newsId);
+            News news = await repository.GetNewsById(newsId);
             if(news != null)
             {
                 return news;
             }
-            throw new NewsNotFoundException(newsId);
+            throw new NewsNotFoundException($"No news found with Id: {newsId}");
         }
 
         public async Task<bool> RemoveNews(int newsId)
         {
-            var news = await repository.GetNewsById(newsId);
+            News news = await repository.GetNewsById(newsId);
             if(news != null)
             {
                 return await repository.RemoveNews(news);
             }
-            throw new NewsNotFoundException(newsId);
+            throw new NewsNotFoundException($"No news found with Id: {newsId}");
         }
 
         /*

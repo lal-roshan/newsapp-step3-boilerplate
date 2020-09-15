@@ -45,10 +45,10 @@ namespace Service
 
         public async Task<Reminder> AddReminder(Reminder reminder)
         {
-            var presentRem = await repository.GetReminder(reminder.ReminderId);
-            if(presentRem != null && presentRem.NewsId == reminder.NewsId)
+            Reminder presentRem = await repository.GetReminderByNewsId(reminder.NewsId);
+            if(presentRem != null)
             {
-                throw new ReminderAlreadyExistsException(reminder.NewsId);
+                throw new ReminderAlreadyExistsException($"This news: {reminder.NewsId} already have a reminder");
             }
             else
             {
@@ -58,7 +58,7 @@ namespace Service
 
         public async Task<Reminder> GetReminderByNewsId(int newsId)
         {
-            var reminder = await repository.GetReminderByNewsId(newsId);
+            Reminder reminder = await repository.GetReminderByNewsId(newsId);
             if(reminder != null)
             {
                 return reminder;
@@ -68,7 +68,7 @@ namespace Service
 
         public async Task<bool> RemoveReminder(int reminderId)
         {
-            var reminder = await repository.GetReminder(reminderId);
+            Reminder reminder = await repository.GetReminder(reminderId);
             if (reminder != null)
             {
                 return await repository.RemoveReminder(reminder);
