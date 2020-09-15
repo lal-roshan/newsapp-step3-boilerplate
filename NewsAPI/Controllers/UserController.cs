@@ -96,6 +96,9 @@ namespace NewsAPI.Controllers
         /// <response code="404">If user was not found</response>
         /// <response code="500">If some error occurred</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(string id, UserProfile user)
         {
             try
@@ -111,19 +114,6 @@ namespace NewsAPI.Controllers
                 return StatusCode(500, "Some error occurred, please try again later !!");
             }
         }
-        /*
-        * Define a handler method which will delete a user from a database.
-        * 
-        * This handler method should return any one of the status messages basis on
-        * different situations: 
-        * 1. 200(OK) - If the user deleted successfully from database. 
-        * 2. 404(NOT FOUND)-If the user with specified userrId is not found. 
-        * 
-        * This handler method should map to the URL "/api/user/{id}" using HTTP Delete
-        * method" where "id" should be replaced by a valid userId without {}
-        * 3. 500(Internal Server Error),means that server cannot process the request 
-        *    for an unknown reason.
-        */
 
         /// <summary>
         /// Method to delete a user
@@ -134,6 +124,9 @@ namespace NewsAPI.Controllers
         /// <response code="404">If user was not found</response>
         /// <respones code="500">If some error occurred</respones>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(string id)
         {
             try
