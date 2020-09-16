@@ -25,7 +25,7 @@ deploy:
         deploy_path: "NewsAPI/"
     artifacts:
         paths:
-            - NewsAPI/bin/release
+            - /builds/153064/newsapp-step3-boilerplate/NewsAPI/bin/release/netcoreapp3.1/NewsAPI.dll
     script:
         - cd $deploy_path
         - dotnet publish -c release
