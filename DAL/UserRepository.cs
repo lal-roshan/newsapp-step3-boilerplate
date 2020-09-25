@@ -22,10 +22,6 @@ namespace DAL
         public UserRepository(NewsDbContext dbContext)
         {
             this.dbContext = dbContext;
-            // Implement AddUser method which should be used to save a new user.   
-            // Implement DeleteUser method which should be used to delete an existing user.
-            // Implement GetUser method which should be used to get a userprofile complete detail by userId.
-            // Implement UpdateUser method which should be used to update an existing user.
         }
 
         /// <summary>
